@@ -1,6 +1,6 @@
 [project]
 name = "buoyant.config"
-version = "0.2.0"
+version = "0.3.0"
 description = "A modular and typed yaml configuration system for python with easy secret support"
 readme = "README.md"
 authors = [

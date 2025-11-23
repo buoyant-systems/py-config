@@ -1,0 +1,6 @@
+logging:
+  level: info
+
+server:
+  host: 0.0.0.0
+  api_key: modular-config-gsm  # Refers to a secret that exists in Google Secret Manager

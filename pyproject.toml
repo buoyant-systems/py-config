@@ -1,0 +1,30 @@
+[project]
+name = "buoyant.config"
+version = "0.2.0"
+description = "A modular and typed yaml configuration system for python with easy secret support"
+readme = "README.md"
+authors = [
+    { name = "Lucas", email = "lucas@buoyant.systems" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pyyaml>=6.0.3",
+    "pydantic>=2.12.4",
+    "google-cloud-secret-manager>=2.25.0",
+    "google-crc32c>=1.7.1",
+]
+
+[tool.uv]
+link-mode = "copy"
+package = true
+
+[[tool.uv.index]]
+url = "https://pypi.org/simple"
+default = true
+
+[build-system]
+requires = ["uv_build>=0.9.11,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "buoyant.config"

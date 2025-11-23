@@ -18,7 +18,7 @@ wheels = [
 
 [[package]]
 name = "buoyant-config"
-version = "0.3.0"
+version = "0.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "google-cloud-secret-manager" },

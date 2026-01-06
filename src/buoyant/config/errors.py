@@ -29,26 +29,25 @@ class ConfigSectionMissingError(ModularConfigError):
         super().__init__(f"Config file missing required section '{self.section}'")
 
 
-class ConfigValueError(ModularConfigError, ValidationError):
-    """An invalid value within a configuration section"""
+class ConfigValueError(ModularConfigError):
+    """A configuration value does not match the defined schema"""
 
     config_path: str
     section: str | None
+    validation_error: ValidationError
 
     def __init__(
-        self, config_path: str, section: str | None, original_error: ValidationError
+        self,
+        config_path: str,
+        section: str | None,
+        validation_error: ValidationError,
     ):
         self.config_path = config_path
         self.section = section
-        
-        # Special sauce for remaining a working pydantic.ValidationError, which is unusual
-        new_instance = ValidationError.from_exception_data(
-            title=original_error.title,
-            line_errors=original_error.errors(), # pyright: ignore[reportArgumentType]
+        self.validation_error = validation_error
+        super().__init__(
+            f"Configuration section incorrectly configured '{self.section}'. {self.validation_error}"
         )
-        self.__dict__.update(new_instance.__dict__)
-        for slot in getattr(new_instance, "__slots__", []):
-            setattr(self, slot, getattr(new_instance, slot))
 
 
 class SecretChecksumFailed(ModularConfigError):
@@ -59,6 +58,9 @@ class SecretChecksumFailed(ModularConfigError):
     def __init__(
         self, secret: str, expected_checksum: str | int, actual_checksum: str | int
     ):
+        self.secret = secret
+        self.expected_checksum = expected_checksum
+        self.actual_checksum = actual_checksum
         super().__init__(
             f"Checksum did not match while fetching secret '{secret}'. Expected: {expected_checksum}, got: {actual_checksum}"
         )

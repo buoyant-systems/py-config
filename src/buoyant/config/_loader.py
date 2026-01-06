@@ -66,4 +66,4 @@ def load[T: BaseModel](
         ):
             raise ConfigSectionMissingError(path, section)
         else:
-            raise ConfigValueError(path, section, invalid) from invalid
+            raise ConfigValueError(config_path=path, section=section, validation_error=invalid) from invalid

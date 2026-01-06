@@ -40,8 +40,15 @@ class ConfigValueError(ModularConfigError, ValidationError):
     ):
         self.config_path = config_path
         self.section = section
-        self.raw_error = original_error
-        super().__init__(str(original_error))
+        
+        # Special sauce for remaining a working pydantic.ValidationError, which is unusual
+        new_instance = ValidationError.from_exception_data(
+            title=original_error.title,
+            line_errors=original_error.errors(), # pyright: ignore[reportArgumentType]
+        )
+        self.__dict__.update(new_instance.__dict__)
+        for slot in getattr(new_instance, "__slots__", []):
+            setattr(self, slot, getattr(new_instance, slot))
 
 
 class SecretChecksumFailed(ModularConfigError):

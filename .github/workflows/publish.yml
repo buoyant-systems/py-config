@@ -21,7 +21,9 @@ jobs:
         uses: astral-sh/setup-uv@v6
       - name: Install Python 3.12
         run: uv python install 3.12
-      - name: Build
+      - name: Test
+        run: uv run pytest
+      - name: Version
         run: uv version ${{ github.ref_name }}
       - name: Build
         run: uv build

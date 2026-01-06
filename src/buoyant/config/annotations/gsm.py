@@ -6,6 +6,8 @@ from google.cloud.secretmanager import SecretManagerServiceClient
 from google_crc32c import Checksum
 from pydantic import PlainValidator
 
+from buoyant.config.errors import SecretChecksumFailed
+
 _logger = logging.getLogger(__name__)
 
 
@@ -25,14 +27,19 @@ def get_secret_value(
     secret_name = f"projects/{project}/secrets/{secret_name}/versions/latest"
 
     _logger.debug("Getting GSM secret %s", secret_name)
-    response = client_factory().access_secret_version(
-        request={"name": secret_name})
+    response = client_factory().access_secret_version(  # pyright: ignore[reportUnknownMemberType]
+        request={"name": secret_name}
+    )
 
     crc32c = Checksum()
-    crc32c.update(response.payload.data)
-    if response.payload.data_crc32c != int(crc32c.hexdigest(), 16):
-        raise ValueError(
-            "Checksum did not match when attempted to fetch a secret")
+    crc32c.update(response.payload.data)  # pyright: ignore[reportUnknownMemberType]
+    computed_checksum = int(crc32c.hexdigest(), 16)
+    if response.payload.data_crc32c != computed_checksum:
+        raise SecretChecksumFailed(
+            secret=secret_name,
+            expected_checksum=response.payload.data_crc32c,
+            actual_checksum=computed_checksum,
+        )
 
     return response.payload.data.decode()
 

@@ -8,6 +8,7 @@ or
 
 ## Example Usage ##
 
+Define your configuration in a modular fashion:
 ```python
 from typing import Annotated, Literal
 
@@ -29,4 +30,10 @@ class BackendConfig(ConfigBase):
     CONFIG_SECTION = "server"
     host: str
     api_key: Annotated[str, gsm_secret(project="buoyant-open-projects")]
+```
+
+Use it easily:
+```python
+config = BackendConfig.load()
+config.host
 ```
